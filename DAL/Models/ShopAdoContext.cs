@@ -23,6 +23,8 @@ namespace ShopWebApi.DAL.Models
         public virtual DbSet<Photo> Photos { get; set; }
         public virtual DbSet<Sale> Sales { get; set; }
         public virtual DbSet<SalePo> SalePos { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UserRole> UserRoles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -124,6 +126,38 @@ namespace ShopWebApi.DAL.Models
                     .HasForeignKey(d => d.SaleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__SalePos__SaleId__31EC6D26");
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("User");
+
+                entity.Property(e => e.PasswordHash).IsRequired();
+
+                entity.Property(e => e.UserLogin)
+                    .IsRequired()
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.UserName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.RoleId)
+                    .HasConstraintName("FK__Users__RoleId__4BAC3F29");
+            });
+
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.HasKey(e => e.RoleId)
+                    .HasName("PK__UserRole__8AFACE1A05A38541");
+
+                entity.ToTable("UserRole");
+
+                entity.Property(e => e.RoleName)
+                    .IsRequired()
+                    .HasMaxLength(20);
             });
 
             OnModelCreatingPartial(modelBuilder);
