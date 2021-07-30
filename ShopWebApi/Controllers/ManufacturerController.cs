@@ -55,8 +55,9 @@ namespace ShopWebApi.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-            var category = manufacturerService.Get(id);
-            manufacturerService.Delete(category);
+            var manufacturer = manufacturerService.Get(id);
+
+            manufacturerService.Delete(manufacturer);
         }
     }
 }
