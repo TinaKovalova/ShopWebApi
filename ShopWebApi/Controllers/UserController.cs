@@ -26,7 +26,7 @@ namespace ShopWebApi.Controllers
             this.userService = new UserService(new UserRepository(context));
 
         }
-
+        /*
         [HttpGet]
         public ActionResult<IEnumerable<UserDTO>> Get()
         {
@@ -51,36 +51,9 @@ namespace ShopWebApi.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-        }
+        }*/
 
-        [HttpPost]
-        [Route("{register}")]
-        public ActionResult Post([FromBody] UserDTO user)
-        {
-            try
-            {
-                var isRegest = userService.GetAll().FirstOrDefault(x => x.UserLogin == user.UserLogin);
-                if (user == null || user.UserLogin == null ||user.PasswordHash==null || user.UserName==null)
-                {
-                    return BadRequest();
-                }
-                else if (isRegest!=null)
-                {
-                    return BadRequest("User with this email already exists");
-                }
-                else
-                {
-                    user.RoleId = 2;
-                    user.PasswordHash = EncryptPassword(user.PasswordHash);
-                    userService.CreateOrUpdate(user);
-                    return Ok();
-                }
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-        }
+      
         [HttpPut("{id}")]
         public ActionResult Put(int id, [FromBody] UserDTO user)
         {
@@ -126,15 +99,6 @@ namespace ShopWebApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error deleting data");
             }
         }
-        private string EncryptPassword(string password)
-        {
-            byte[] hashValue;
-            UnicodeEncoding ue = new UnicodeEncoding();
-
-            byte[] paassBytes = ue.GetBytes(password);
-            SHA256 sHA = SHA256.Create();
-            hashValue = sHA.ComputeHash(paassBytes);
-            return hashValue.ToString();
-        }
+        
     }
 }
