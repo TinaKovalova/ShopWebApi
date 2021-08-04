@@ -22,16 +22,10 @@ namespace BLL.Services
                 cfg.CreateMap<Sale, SaleDTO>()
                .ForMember(dto => dto.SalePos, x => x.Ignore());
                 cfg.CreateMap<SaleDTO, Sale>()
-                  .ForMember(pos => pos.SalePos, x => x.Ignore());
-               
-
-
+                  .ForMember(pos => pos.SalePos, x => x.Ignore());           
             });
-
-          
+         
             mapper = new Mapper(configuration);
-    
-
         }
         public SaleDTO Get(int id) => mapper.Map<SaleDTO>(saleRepository.Get(id));
         public IEnumerable<SaleDTO> GetAll() => mapper.Map<IEnumerable<SaleDTO>>(saleRepository.GetAll());

@@ -46,9 +46,9 @@ namespace ShopWebApi.Controllers
                 sale.NumberSale = last.NumberSale + 1;
             }
                         
-            sale.DateSale = DateTime.Now;       ///***
-            saleService.CreateOrUpdate(sale);           ////**
-            var last1 = saleService.GetAll().ToList().Last();           ////**
+            sale.DateSale = DateTime.Now;
+            saleService.CreateOrUpdate(sale);
+            var last1 = saleService.GetAll().ToList().Last();
             sale.SalePos.ToList().ForEach(elem =>
             {
                 elem.SaleId = last1.SaleId;
