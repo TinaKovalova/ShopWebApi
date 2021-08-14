@@ -64,7 +64,10 @@ namespace ShopWebApi.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] UserDTO user)
         {
+           
+
             var pas = HashPassword(user.PasswordHash);
+           
             var identity = GetIdentity(user.UserLogin, pas);
             if (identity == null)
             {
@@ -83,8 +86,10 @@ namespace ShopWebApi.Controllers
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return Ok(tokenHandler.WriteToken(token));
+            var dataUser = userService.GetAll().FirstOrDefault(x => x.UserLogin == user.UserLogin && x.PasswordHash == user.PasswordHash);
+           
+           
+            return Ok(new { Token = tokenHandler.WriteToken(token) });
             
         }
         private ClaimsIdentity GetIdentity(string username, string password)
@@ -92,11 +97,13 @@ namespace ShopWebApi.Controllers
             UserDTO user = userService.GetAll().FirstOrDefault(x => x.UserLogin == username && x.PasswordHash == password);
             if (user != null)
             {
-                var userRole = roleService.Get(user.RoleId);
+            
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserLogin.ToString()),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, userRole.ToString() )
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserName),
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserLogin),
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.RoleId.ToString())
+                    
                 };
                 ClaimsIdentity claimsIdentity =
                 new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
