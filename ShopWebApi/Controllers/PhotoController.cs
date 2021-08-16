@@ -49,7 +49,8 @@ namespace ShopWebApi.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-        }
+        } 
+       
      
         [HttpPost]
         public ActionResult Post([FromBody] PhotoDTO photo)

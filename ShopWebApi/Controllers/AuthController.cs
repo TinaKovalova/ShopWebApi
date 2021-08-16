@@ -64,32 +64,40 @@ namespace ShopWebApi.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] UserDTO user)
         {
-           
-
-            var pas = HashPassword(user.PasswordHash);
-           
-            var identity = GetIdentity(user.UserLogin, pas);
-            if (identity == null)
+           if(user.UserLogin!=null && user.PasswordHash!=null && user.UserLogin!="" && user.PasswordHash !="")
             {
-                return BadRequest(new { errorText = "Invalid username or password." });
+                var pas = HashPassword(user.PasswordHash);
+
+                var identity = GetIdentity(user.UserLogin, pas);
+                if (identity == null)
+                {
+                    return BadRequest(new { errorText = "Invalid username or password." });
+                }
+                var now = DateTime.UtcNow;
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = identity,
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    Issuer = AuthOptions.ISSUER,
+                    Audience = AuthOptions.AUDIENCE,
+                    SigningCredentials = new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256Signature)
+                };
+
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                var dataUser = userService.GetAll().FirstOrDefault(x => x.UserLogin == user.UserLogin && x.PasswordHash == user.PasswordHash);
+
+
+                return Ok(new { Token = tokenHandler.WriteToken(token) });
+
             }
-            var now = DateTime.UtcNow;
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenDescriptor = new SecurityTokenDescriptor
+            else
             {
-                Subject = identity,
-                Expires = DateTime.UtcNow.AddDays(7),
-                Issuer = AuthOptions.ISSUER,
-                Audience = AuthOptions.AUDIENCE,
-                SigningCredentials = new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256Signature)
-            };
+                return BadRequest();
+            }
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var dataUser = userService.GetAll().FirstOrDefault(x => x.UserLogin == user.UserLogin && x.PasswordHash == user.PasswordHash);
-           
-           
-            return Ok(new { Token = tokenHandler.WriteToken(token) });
+            
             
         }
         private ClaimsIdentity GetIdentity(string username, string password)
