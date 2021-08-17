@@ -71,7 +71,7 @@ namespace ShopWebApi.Controllers
                 var identity = GetIdentity(user.UserLogin, pas);
                 if (identity == null)
                 {
-                    return BadRequest(new { errorText = "Invalid username or password." });
+                    return BadRequest(StatusCodes.Status401Unauthorized);
                 }
                 var now = DateTime.UtcNow;
 
